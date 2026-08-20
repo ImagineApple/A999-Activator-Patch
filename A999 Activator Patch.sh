@@ -1,5 +1,262 @@
 #!/bin/bash
 
+SCRIPTPATH="${0}"
+SCRIPTPATHMAIN="${0%/*}"
+PreRunOS()
+{
+	MACOSVERSION=$(sw_vers -productVersion | cut -d '.' -f 1,2)
+}
+PreRunMac()
+{
+	MACVERSION=$(sysctl hw.model | awk '{ print $2 }')
+}
+LIGHTMODE()
+{
+	APP='\033["38;5;23m'
+	TITLE='\033["38;5;24m'
+	BODY='\033["38;5;23m'
+	PROMPTSTYLE='\033["38;5;66m'
+	OSFOUND='\033["38;5;67m'
+	WARNING='\033["38;5;160m'
+	ERROR='\033["38;5;9m'
+	CANCEL='\033["38;5;31m'
+	BOLD='\033[1m'
+	RESET='\033[0m'
+}
+DARKMODE()
+{
+	APP='\033["38;5;158m'
+	TITLE='\033["38;5;153m'
+	BODY='\033["38;5;158m'
+	PROMPTSTYLE='\033["38;5;152m'
+	OSFOUND='\033["38;5;111m'
+	WARNING='\033["38;5;160m'
+	ERROR='\033["38;5;196m'
+	CANCEL='\033["38;5;38m'
+	BOLD='\033[1m'
+	RESET='\033[0m'
+}
+UIColors()
+{
+	UIAPPEARANCE=$(defaults read -g AppleInterfaceStyle 2>/dev/null)
+	if [[ ! "$UIAPPEARANCE" == "Dark" ]]; then
+		LIGHTMODE
+	else
+		if [[ "$MACOSVERSION" == 10.5 || "$MACOSVERSION" == 10.6 || "$MACOSVERSION" == 10.7 || "$MACOSVERSION" == 10.8 || "$MACOSVERSION" == 10.9 || "$MACOSVERSION" == 10.10 || "$MACOSVERSION" == 10.11 || "$MACOSVERSION" == 10.12 || "$MACOSVERSION" == 10.13 ]]; then
+			LIGHTMODE
+		else
+			DARKMODE
+		fi
+	fi
+	if [[ "$MACOSVERSION" == 10.5 || "$MACOSVERSION" == 10.6 || "$MACOSVERSION" == 10.7 || "$MACOSVERSION" == 10.8 || "$MACOSVERSION" == 10.9 || "$MACOSVERSION" == 10.10 || "$MACOSVERSION" == 10.11 || "$MACOSVERSION" == 10.12 || "$MACOSVERSION" == 10.13 ]]; then
+		DEFAULTBLUE='\033[38;5;23m'
+		DESERT='\033[38;5;130m'
+		FOREST='\033[38;5;22m'
+		CINNAMON='\033[38;5;88m'
+		CLASSICBLACK='\033[38;5;0m'
+		CLASSICBLACKBW="                    Classic Black........................(5)"
+		
+	else
+		if [[ "$UIAPPEARANCE" == "Dark" ]]; then
+			DEFAULTBLUE='\033[38;5;158m'
+			DESERT='\033[38;5;180m'
+			FOREST='\033[38;5;108m'
+			CINNAMON='\033[38;5;124m'
+			CLASSICBLACK='\033[38;5;255m'
+			APPLECHIP="\033[38;5;117m                    App\033[38;5;111mle \033[38;5;135mSili\033[38;5;207mcone............\033[38;5;208m...........\033[38;5;11m(1)"
+			if [[ $(uname -m) == "arm64" ]]; then
+				CLASSICBLACKBW="                    Classic White........................(6)"
+			else
+				CLASSICBLACKBW="                    Classic White........................(5)"
+			fi
+		else
+			DEFAULTBLUE='\033[38;5;23m'
+			DESERT='\033[38;5;130m'
+			FOREST='\033[38;5;22m'
+			CINNAMON='\033[38;5;88m'
+			CLASSICBLACK='\033[38;5;0m'
+			APPLECHIP="\033[38;5;33m                    App\033[38;5;63mle \033[38;5;129mSili\033[38;5;163mcone............\033[38;5;209m...........\033[38;5;214m(1)"
+			if [[ $(uname -m) == "arm64" ]]; then
+				CLASSICBLACKBW="                    Classic Black........................(6)"
+			else
+				CLASSICBLACKBW="                    Classic Black........................(5)"
+			fi
+		fi
+	fi
+	if [[ "$APP" == '\033["38;5;23m' || "$APP" == '\033["38;5;158m' ]]; then
+		SETTINGCOLOR="Default Blue"
+		if [[ -e "$SCRIPTPATHMAIN/.desertsandssetting" ]]; then
+			COLORSANDS
+		elif [[ -e "$SCRIPTPATHMAIN/.forestgreensetting" ]]; then
+			COLORFOREST
+		elif [[ -e "$SCRIPTPATHMAIN/.cinnamonapplecolor" ]]; then
+			CINNAMONCOLOR
+		elif [[ -e "$SCRIPTPATHMAIN/.classicsetting" ]]; then
+			COLORCLASSIC
+		elif [[ -e "$SCRIPTPATHMAIN/.colorm1setting" ]]; then
+			COLORM1
+		fi
+	elif [[ "$APP" == '\033["38;5;130m' || "$APP" == '\033["38;5;180m' ]]; then
+		SETTINGCOLOR="Desert Sands"
+		if [[ -e "$SCRIPTPATHMAIN/.defaultbluesetting" ]]; then
+			COLORBLUE
+		elif [[ -e "$SCRIPTPATHMAIN/.forestgreensetting" ]]; then
+			COLORFOREST
+		elif [[ -e "$SCRIPTPATHMAIN/.cinnamonapplecolor" ]]; then
+			CINNAMONCOLOR
+		elif [[ -e "$SCRIPTPATHMAIN/.classicsetting" ]]; then
+			COLORCLASSIC
+		elif [[ -e "$SCRIPTPATHMAIN/.colorm1setting" ]]; then
+			COLORM1
+		fi
+	elif [[ "$APP" == '\033["38;5;22m' || "$APP" == '\033["38;5;108m' ]]; then
+		SETTINGCOLOR="Forest Green"
+		if [[ -e "$SCRIPTPATHMAIN/.desertsandssetting" ]]; then
+			COLORSANDS
+		elif [[ -e "$SCRIPTPATHMAIN/.defaultbluesetting" ]]; then
+			COLORBLUE
+		elif [[ -e "$SCRIPTPATHMAIN/.cinnamonapplecolor" ]]; then
+			CINNAMONCOLOR
+		elif [[ -e "$SCRIPTPATHMAIN/.classicsetting" ]]; then
+			COLORCLASSIC
+		elif [[ -e "$SCRIPTPATHMAIN/.colorm1setting" ]]; then
+			COLORM1
+		fi
+	elif [[ "$APP" == '\033["38;5;88m' || "$APP" == '\033["38;5;124m' ]]; then
+		SETTINGCOLOR="Cinnamon Apple"
+		if [[ -e "$SCRIPTPATHMAIN/.desertsandssetting" ]]; then
+			COLORSANDS
+		elif [[ -e "$SCRIPTPATHMAIN/.defaultbluesetting" ]]; then
+			COLORBLUE
+		elif [[ -e "$SCRIPTPATHMAIN/.forestgreensetting" ]]; then
+			COLORFOREST
+		elif [[ -e "$SCRIPTPATHMAIN/.classicsetting" ]]; then
+			COLORCLASSIC
+		elif [[ -e "$SCRIPTPATHMAIN/.colorm1setting" ]]; then
+			COLORM1
+		fi
+	elif [[ "$APP" == '\033["38;5;0m' || "$APP" == '\033["38;5;255m' ]]; then
+		if [[ "$MACOSVERSION" == 10.5 || "$MACOSVERSION" == 10.6 || "$MACOSVERSION" == 10.7 || "$MACOSVERSION" == 10.8 || "$MACOSVERSION" == 10.9 || "$MACOSVERSION" == 10.10 || "$MACOSVERSION" == 10.11 || "$MACOSVERSION" == 10.12 || "$MACOSVERSION" == 10.13 ]]; then
+			SETTINGCOLOR="Classic Black"
+			if [[ -e "$SCRIPTPATHMAIN/.desertsandssetting" ]]; then
+				COLORSANDS
+			elif [[ -e "$SCRIPTPATHMAIN/.forestgreensetting" ]]; then
+				COLORFOREST
+			elif [[ -e "$SCRIPTPATHMAIN/.cinnamonapplecolor" ]]; then
+				CINNAMONCOLOR
+			elif [[ -e "$SCRIPTPATHMAIN/.defaultbluesetting" ]]; then
+				COLORBLUE
+			elif [[ -e "$SCRIPTPATHMAIN/.colorm1setting" ]]; then
+				COLORM1
+			fi
+		else
+			if [[ "$UIAPPEARANCE" == "Dark" ]]; then
+				SETTINGCOLOR="Classic White"
+				if [[ -e "$SCRIPTPATHMAIN/.desertsandssetting" ]]; then
+					COLORSANDS
+				elif [[ -e "$SCRIPTPATHMAIN/.forestgreensetting" ]]; then
+					COLORFOREST
+				elif [[ -e "$SCRIPTPATHMAIN/.cinnamonapplecolor" ]]; then
+					CINNAMONCOLOR
+				elif [[ -e "$SCRIPTPATHMAIN/.defaultbluesetting" ]]; then
+					COLORBLUE
+				elif [[ -e "$SCRIPTPATHMAIN/.colorm1setting" ]]; then
+					COLORM1
+				fi
+			else
+				SETTINGCOLOR="Classic Black"
+				if [[ -e "$SCRIPTPATHMAIN/.desertsandssetting" ]]; then
+					COLORSANDS
+				elif [[ -e "$SCRIPTPATHMAIN/.forestgreensetting" ]]; then
+					COLORFOREST
+				elif [[ -e "$SCRIPTPATHMAIN/.cinnamonapplecolor" ]]; then
+					CINNAMONCOLOR
+				elif [[ -e "$SCRIPTPATHMAIN/.defaultbluesetting" ]]; then
+					COLORBLUE
+				elif [[ -e "$SCRIPTPATHMAIN/.colorm1setting" ]]; then
+					COLORM1
+				fi
+			fi
+		fi
+	elif [[ "$APP" == '\033["38;5;214m' || "$APP" == '\033["38;5;185m' ]]; then
+		if [[ $(uname -m) == "arm64" ]]; then
+			SETTINGCOLOR="Apple Silicone"
+			if [[ -e "$SCRIPTPATHMAIN/.desertsandssetting" ]]; then
+				COLORSANDS
+			elif [[ -e "$SCRIPTPATHMAIN/.forestgreensetting" ]]; then
+				COLORFOREST
+			elif [[ -e "$SCRIPTPATHMAIN/.cinnamonapplecolor" ]]; then
+				CINNAMONCOLOR
+			elif [[ -e "$SCRIPTPATHMAIN/.classicsetting" ]]; then
+				COLORCLASSIC
+			elif [[ -e "$SCRIPTPATHMAIN/.defaultbluesetting" ]]; then
+				COLORBLUE
+			fi
+		else
+			if [[ $HOMEUSER == 'YES' ]]; then
+				cd "$SCRIPTPATHMAIN"
+				Output rm -R .colorm1setting
+			fi
+			COLORCLASSIC
+		fi
+	else
+		MODIFIEDCOLORS="YES"
+		SETTINGCOLOR="Unknown"
+	fi
+	if [[ $UIAPPEARANCE == 'Dark' ]]; then
+		APPLECHIPINFO="\033[38;5;117mApp\033[38;5;111mle \033[38;5;135mSili\033[38;5;207mcone"
+	else
+		APPLECHIPINFO="\033[38;5;33mApp\033[38;5;63mle \033[38;5;129mSili\033[38;5;163mcone"
+	fi
+}
+ANIMATIONDRIVE()
+{
+	local frames=("..." "   " ".  " ".. ")
+		while true; do
+			for frame in "${frames[@]}"; do
+				echo -ne "\r                              Creating the drive$frame   "
+				sleep 0.7
+			done
+		done
+}
+ANIMATIONDOWNLOAD()
+{
+	local frames=("..." "   " ".  " ".. ")
+		while true; do
+			for frame in "${frames[@]}"; do
+				echo -ne "\r                                Downloading$frame   "
+				sleep 0.7
+			done
+		done
+}
+WINDOWBAR()
+{
+	clear
+	echo -e "${APP}${BOLD}                           A999 Activator Patch ${RESET}${APP}V1.0.0${BOLD}"
+	echo -e "»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»"
+}
+WINDOWBAREND()
+{
+	echo -e ""
+	echo -e "${RESET}${CANCEL}${BOLD}                                Script Canceled"
+	echo -e "${RESET}${APP}${BOLD}"
+	echo -e "»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»"
+	echo -e "${RESET}"
+	exit
+}
+WINDOWERROR()
+{
+	echo -e ""
+	echo -e "${RESET}${ERROR}${BOLD}"
+	echo -e "       Command not recognized, please report the following code to GitHub: "
+	echo -e "                                     384508"
+	echo -e "${RESET}"
+	echo -e "${RESET}${APP}${BOLD}"
+	echo -e "»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»"
+	echo -e "${RESET}"
+	exit
+}
+UIColors
 MENU_SELECTOR()
 {
     local options=("$@")
@@ -54,34 +311,185 @@ MENU_SELECTOR()
 }
 MAINMENU()
 {
-	if [[ $FIRSTTIMEHERE=='TRUE' ]]; then
-		cd "$SCRIPTPATHMAIN"
-		sed -i '' '8856s/TRUE/FALSE/' macOS\ Creator.command
-	fi
-	FIRSTTIMEHERE="FALSE"
-	ENTERHERE="TRUE"
 	WINDOWBAR
-	echo -e "${RESET}${TITLE}${BOLD}                            macOS Creator Home menu${RESET}"
-	echo -e "${RESET}${BODY}                        Press ${BOLD}W${RESET}${BODY} to see list of controls${RESET}"
+	echo -e "${RESET}${TITLE}${BOLD}                   Select the A999 executable to get started${RESET}"
 	echo -e "${RESET}${BODY}                  Use ${BOLD}↑ ↓${RESET}${BODY} to navigate. Press ${BOLD}Return${RESET}${BODY} to select${RESET}"
-	echo -e "${CANCEL}                     To show the help menu, press the ${BOLD}? ${RESET}${CANCEL}key${RESET}"
 	echo -e ""
 	echo -e "${TITLE}${BOLD}                            Please choose an option:${RESET}${BODY}"
-	menuoptions=("-----------Create macOS Installer-----------" \
-             	"-------------Identify Mac model-------------" \
-             	"------------------Settings------------------" \
-             	"-----------------User Guide-----------------" \
-             	"--------------------Exit--------------------" )
+	menuoptions=("-----------Select A999 Executable-----------" \
+             	 "--------------------Exit--------------------" )
 	MENU_SELECTOR "${menuoptions[@]}"
 	selection=$?
 	if [[ $selection -eq 000 ]]; then
-    	AUTOMACOSINSTALL
-    elif [[ $selection -eq 004 ]]; then
+    	A999FOLDER
+    elif [[ $selection -eq 001 ]]; then
     	WINDOWBAREND
-    elif [[ $selection -eq 110 ]]; then
-    	echo "Credits"
 	else
     	WINDOWERROR
 	fi
+}
+A999FOLDER()
+{
+folderpath=$(osascript <<EOF
+		  	  tell application "System Events"
+		    	    activate
+		    	    set theFile to choose file with prompt "Select the A999 Executable:"
+		    	    return POSIX path of theFile
+		    	end tell
+EOF
+)
+FOLDERVERIFY
+}
+FOLDERVERIFY()
+{
+    local dir
+    dir=$(dirname "$folderpath")
+    
+    local required_files=("changelog.md" "license.md" "readme.md")
+    local required_folders=("bin" "payload")
+    
+    for file in "${required_files[@]}"; do
+        if [[ ! -f "$dir/$file" ]]; then
+            FOLDERERROR
+            return 1
+        fi
+    done
+    
+    for folder in "${required_folders[@]}"; do
+        if [[ ! -d "$dir/$folder" ]]; then
+            FOLDERERROR
+            return 1
+        fi
+    done
+    
+    for file in "${required_files[@]}"; do
+        if [[ -f "$dir/.patched" ]]; then
+            FOLDERPASSPATCHED
+            return 1
+        fi
+    done
+    
+    FOLDERPASS
+    return 0
+}
+FOLDERERROR()
+{
+	echo -e ""
+	echo -e "${RESET}${ERROR}        This folder has been corrupted. Please redownload and try again."
+	echo -e "${RESET}${APP}${BOLD}"
+	echo -e "»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»"
+	echo -e "${RESET}"
+	exit
+	
+}
+FOLDERPASS()
+{
+	WINDOWBAR
+	echo -e "${RESET}${TITLE}${BOLD}                              A999 executable found!${RESET}"
+	echo -e "${RESET}${BODY}                  Use ${BOLD}↑ ↓${RESET}${BODY} to navigate. Press ${BOLD}Return${RESET}${BODY} to select${RESET}"
+	echo -e ""
+	echo -e "${TITLE}${BOLD}                            Please choose an option:${RESET}${BODY}"
+	menuoptions=("-------------* Start Patching *-------------" \
+				 "-----------Select A999 Executable-----------" \
+             	 "--------------------Exit--------------------" )
+	MENU_SELECTOR "${menuoptions[@]}"
+	selection=$?
+	if [[ $selection -eq 000 ]]; then
+    	A999PATCH
+    elif [[ $selection -eq 001 ]]; then
+    	A999FOLDER
+    elif [[ $selection -eq 002 ]]; then
+    	WINDOWBAREND
+	else
+    	WINDOWERROR
+	fi
+}
+FOLDERPASSPATCHED()
+{
+	WINDOWBAR
+	echo -e "${RESET}${TITLE}${BOLD}                          A999 has already been patched${RESET}"
+	echo -e "${RESET}${BODY}                  Use ${BOLD}↑ ↓${RESET}${BODY} to navigate. Press ${BOLD}Return${RESET}${BODY} to select${RESET}"
+	echo -e ""
+	echo -e "${TITLE}${BOLD}                            Please choose an option:${RESET}${BODY}"
+	menuoptions=("-------------* Revert Patches *-------------" \
+				 "-----------Select A999 Executable-----------" \
+             	 "--------------------Exit--------------------" )
+	MENU_SELECTOR "${menuoptions[@]}"
+	selection=$?
+	if [[ $selection -eq 000 ]]; then
+    	A999PATCHREVERT
+    elif [[ $selection -eq 001 ]]; then
+    	A999FOLDER
+    elif [[ $selection -eq 002 ]]; then
+    	WINDOWBAREND
+	else
+    	WINDOWERROR
+	fi
+}
+A999PATCH()
+{
+	WINDOWBAR
+	echo -e -n "${RESET}${TITLE}${BOLD}                               Applying patches..."
+	echo -e ""
+	echo -e -n "${RESET}${TITLE}                          Please Enter Your "
+	sudo echo ""
+	echo -e "\033[1A\033[0K${BODY}"
+	sed -i '' '17s/047-95293/122-77536/' "$dir/a999"
+	sed -i '' '17s/18A0749D-A68D-430C-8E31-1920612F3229/9EE30DC1-EC4B-47CE-A002-24CD6B18947D/' "$dir/a999"
+	sed -i '' '17s/15.8.7_19H411/15.8.8_19H422/' "$dir/a999"
+	sed -i '' '19s/047-95429/122-77510/' "$dir/a999"
+	sed -i '' '19s/C8FE847C-FE0E-49B1-9C7E-F56894B6E2BF/5D4563BF-445C-4D8D-AF56-0BAC336265F3/' "$dir/a999"
+	sed -i '' '19s/15.8.7_19H411/15.8.8_19H422/' "$dir/a999"
+	sed -i '' '26s/15.8.7/15.8.8/' "$dir/a999"
+	sed -i '' '140s/15.8.7/15.8.8/' "$dir/a999"
+	sed -i '' '142s/15.8.7/15.8.8/' "$dir/a999"
+	sed -i '' '143s/15.8.7/15.8.8/' "$dir/a999"
+	sed -i '' '145s/15.8.7/15.8.8/' "$dir/a999"
+	sed -i '' '175s/15.8.7/15.8.8/' "$dir/a999"
+	touch "$dir/.patched"
+	echo -e "${RESET}${BODY}${BOLD}                                   All Done!${RESET}"
+	echo -e ""
+	echo -e "${TITLE}${BOLD}                            Please choose an option:${RESET}${BODY}"
+	menuoptions=("-----------------Start A999-----------------" \
+             	 "--------------------Exit--------------------" )
+	MENU_SELECTOR "${menuoptions[@]}"
+	selection=$?
+	if [[ $selection -eq 000 ]]; then
+    	echo -e "${RESET}"
+    	echo -e ""
+    	cd $dir
+    	./a999 && exit
+    elif [[ $selection -eq 001 ]]; then
+    	WINDOWBAREND
+	else
+    	WINDOWERROR
+	fi
+}
+A999PATCHREVERT()
+{
+	WINDOWBAR
+	echo -e -n "${RESET}${TITLE}${BOLD}                               Removing patches..."
+	echo -e ""
+	echo -e -n "${RESET}${TITLE}                          Please Enter Your "
+	sudo echo ""
+	echo -e "\033[1A\033[0K${BODY}"
+	sed -i '' '17s/122-77536/047-95293/' "$dir/a999"
+	sed -i '' '17s/9EE30DC1-EC4B-47CE-A002-24CD6B18947D/18A0749D-A68D-430C-8E31-1920612F3229/' "$dir/a999"
+	sed -i '' '17s/15.8.8_19H422/15.8.7_19H411/' "$dir/a999"
+	sed -i '' '19s/122-77510/047-95429/' "$dir/a999"
+	sed -i '' '19s/5D4563BF-445C-4D8D-AF56-0BAC336265F3/C8FE847C-FE0E-49B1-9C7E-F56894B6E2BF/' "$dir/a999"
+	sed -i '' '19s/15.8.8_19H422/15.8.7_19H411/' "$dir/a999"
+	sed -i '' '26s/15.8.8/15.8.7/' "$dir/a999"
+	sed -i '' '140s/15.8.8/15.8.7/' "$dir/a999"
+	sed -i '' '142s/15.8.8/15.8.7/' "$dir/a999"
+	sed -i '' '143s/15.8.8/15.8.7/' "$dir/a999"
+	sed -i '' '145s/15.8.8/15.8.7/' "$dir/a999"
+	sed -i '' '175s/15.8.8/15.8.7/' "$dir/a999"
+	rm -rf "$dir/.patched"
+	echo -e "${RESET}${BODY}${BOLD}                                   All Done!${RESET}"
+	echo -e "${RESET}${APP}${BOLD}"
+	echo -e "»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»"
+	echo -e "${RESET}"
+	exit
 }
 MAINMENU
