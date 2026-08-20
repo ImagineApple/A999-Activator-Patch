@@ -8,7 +8,7 @@ A simple script to patch the A999 Activator in order to continue to downgrade iP
 
 3 - Open up Terminal and drag the A999 Activator Patch into the Terminal window and press Return
 
-4 - Once the script launches, choose the A999 Activator folder by pressing Return and then choosing the folder from the Finder.
+4 - Once the script launches, choose the A999 Activator executable by pressing Return and then choosing a999 from the Finder.
 
 5 - Using the arrow keys, choose Begin Patching. You may need to enter your account password.
 
